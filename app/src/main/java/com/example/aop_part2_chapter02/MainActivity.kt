@@ -11,7 +11,7 @@ import androidx.core.view.isVisible
 
 class MainActivity : AppCompatActivity() {
     //private형태 경우 findviewbyid 설정시 이렇게.. ... by lazy{} 기존 코드는 버그 생김
-    private val claarButton: Button by lazy {
+    private val clearButton: Button by lazy {
         findViewById(R.id.clearButton)
     }
 
@@ -26,6 +26,7 @@ class MainActivity : AppCompatActivity() {
     private val numberFicker: NumberPicker by lazy {
         findViewById(R.id.numberPicker)
     }
+
     //리스트에 넣어서 한번에 초기화
     private val numberTextViewList: List<TextView> by lazy {
         listOf<TextView>(
@@ -35,7 +36,7 @@ class MainActivity : AppCompatActivity() {
             findViewById(R.id.textView4),
             findViewById(R.id.textView5),
             findViewById(R.id.textView6),
-            )
+        )
 
     }
 
@@ -55,6 +56,18 @@ class MainActivity : AppCompatActivity() {
 
         initRunButton()
         initaddButton()
+        initClearButton()
+    }
+
+    private fun initClearButton() {
+        clearButton.setOnClickListener {
+            pickNumberSet.clear()
+            //list데이터를 하나하나 꺼내주는 forEach
+            numberTextViewList.forEach {
+                it.isVisible = false
+            }
+        }
+
     }
 
     private fun initaddButton() {
@@ -87,6 +100,15 @@ class MainActivity : AppCompatActivity() {
     private fun initRunButton() {
         runButton.setOnClickListener {
             val list = getRandomNumber()
+            //forEachIndexed는 인덱스 값도 불러 옴
+            list.forEachIndexed { index, number ->
+                val textView = numberTextViewList[index]
+
+                textView.text = number.toString()
+                textView.isVisible = true
+            }
+
+            didRun = true
 
             Log.d("MainActivity", list.toString())
         }
@@ -97,13 +119,18 @@ class MainActivity : AppCompatActivity() {
         val numberList = mutableListOf<Int>()
             .apply {
                 for (i in 1..45) {
+
+                    if (pickNumberSet.contains(i)) {
+                        continue
+                    }
+
                     this.add(i)
                 }
             }
         //nuberList 랜덤하게 섞기
         numberList.shuffle()
-// 6자리 숫자까지만 보여주기
-        val newList = numberList.subList(0, 6)
+// 이미 pickNumberSet 선택한 값을 리스트로 변환 + pickNumberSet의 값을 제외 랜덤으로 3개의 번호만 추출
+        val newList = pickNumberSet.toList() + numberList.subList(0, 6 - pickNumberSet.size)
 //넘버 오름차순으로 정렬
         return newList.sorted()
     }
