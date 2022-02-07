@@ -134,4 +134,7 @@ class MainActivity : AppCompatActivity() {
 //넘버 오름차순으로 정렬
         return newList.sorted()
     }
+
+    //gittestㅎㅏ는중
+
 }
